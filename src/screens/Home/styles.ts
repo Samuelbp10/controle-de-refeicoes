@@ -7,3 +7,10 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.COLORS.GRAY_7};
   padding: 24px;
 `;
+// Estilo para o título da seção de refeições (Meals)
+export const MealsTitle = styled.Text`
+  font-size: ${({ theme }) => theme.FONT_SIZE.MD}px;
+  font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
+  color: ${({ theme }) => theme.COLORS.GRAY_1};
+  margin-bottom: 8px;
+`;
