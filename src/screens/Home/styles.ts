@@ -14,3 +14,11 @@ export const MealsTitle = styled.Text`
   color: ${({ theme }) => theme.COLORS.GRAY_1};
   margin-bottom: 8px;
 `;
+// Criei esse estilo para o título da data (ex: 12.08.22) que vai separar os grupos de refeições na minha SectionList.
+export const TituloData = styled.Text`
+  font-size: ${({ theme }) => theme.FONT_SIZE.LG}px;
+  font-family: ${({ theme }) => theme.FONT_FAMILY.BOLD};
+  color: ${({ theme }) => theme.COLORS.GRAY_1};
+  margin-top: 32px;
+  margin-bottom: 8px;
+`;
