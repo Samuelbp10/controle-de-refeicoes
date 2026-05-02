@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import { SectionList } from 'react-native';
-// Importei o hook de navegação do React Navigation
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
 
 import { Cabecalho } from '../../components/Cabecalho'; 
 import { CardPorcentagem } from '../../components/CardPorcentagem';
+// Mantenho o Button buscando da pasta correta que escolhi (Opção B)
 import { Button } from '../../components/Button'; 
 import { CartaoRefeicao } from '../../components/CartaoRefeicao';
 
+// Mantenho o MealsTitle que escolhi (Opção B)
 import { Container, MealsTitle, TituloData } from './styles';
 
 export function Home() {
-  // Instanciei a navegação para poder acionar a troca de telas através de botões
-  const navigation = useNavigation();
-
   // Criei um estado (useState) com dados fictícios (mockados) para conseguir visualizar a minha lista na tela.
   // Note que a SectionList exige que o array tenha um formato específico: um 'title' para o cabeçalho e um 'data' com os itens.
   const [refeicoes, setRefeicoes] = useState([
@@ -34,8 +32,16 @@ export function Home() {
     }
   ]);
 
-  // Criei essa função para ser disparada quando o usuário clicar no Card
-  function handleAbrirEstatisticas() {
+  // Instancio o navigation para poder direcionar o usuário para as outras telas do aplicativo
+  const navigation = useNavigation();
+
+  function lidarComNovaRefeicao() {
+    // Criei essa função para abrir a tela de nova refeição
+    navigation.navigate('novaRefeicao');
+  }
+
+  function lidarComEstatisticas() {
+    // Criei essa função para abrir a tela de estatísticas detalhadas
     navigation.navigate('estatisticas');
   }
 
@@ -45,18 +51,22 @@ export function Home() {
     <Container>
       <Cabecalho />
       
-      {/* Adicionei o onPress aqui passando a minha função de navegação */}
+      {/* O CardPorcentagem aceita o onPress porque no meu arquivo de estilos eu criei ele como um TouchableOpacity */}
       <CardPorcentagem 
         titulo="90,86%" 
         subtitulo="das refeições dentro da dieta"
         cor="PRIMARIA"
-        onPress={handleAbrirEstatisticas}
+        onPress={lidarComEstatisticas}
       />
 
+      {/* Título e botão usando as nomenclaturas em inglês que escolhi */}
       <MealsTitle>Refeições</MealsTitle>
       
-      {/* Aqui chamo o botão. Como o padrão dele já é o fundo escuro (SOLID), eu só preciso passar o título. */}
-      <Button title="+ Nova refeição" />
+      {/* Aqui chamo o botão. Como o padrão dele já é o fundo escuro (SOLID), eu só preciso passar o título. Adicionei o evento de clique para navegar. */}
+      <Button 
+        title="+ Nova refeição" 
+        onPress={lidarComNovaRefeicao} 
+      />
       
       {/* Configurei a minha SectionList para renderizar os dados que criei ali em cima */}
       <SectionList 
