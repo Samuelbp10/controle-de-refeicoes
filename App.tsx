@@ -3,6 +3,7 @@ import { useFonts, NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-googl
 import { ActivityIndicator, View } from 'react-native';
 
 import theme from './src/theme';
+import { Home } from './src/screens/Home';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,9 +21,8 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.COLORS.GRAY_7 }}>
-        {/* Aqui entrarão nossas rotas de navegação em breve */}
-      </View>
+      {/* Aqui eu renderizo a minha tela Inicial (Home). Mais para frente, isso será substituído pelas Rotas (React Navigation) */}
+      <Home />
     </ThemeProvider>
   );
 }
