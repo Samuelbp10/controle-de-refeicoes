@@ -1,12 +1,19 @@
-import { Header } from '../../components/Header';
+import { Cabecalho } from '../../components/Cabecalho'; 
+import { CardPorcentagem } from '../../components/CardPorcentagem';
 import { Container } from './styles';
 
 export function Home() {
-  // Criei a tela principal. Por enquanto, só importei e posicionei o Header que acabei de criar.
-  // O próximo passo será criar o componente de Porcentagem e a lista (SectionList) das refeições para colocar logo abaixo.
+  // Posicionei o cabeçalho e, logo abaixo, o meu card de porcentagem.
+  // Passei "PRIMARIA" na cor para ele ficar verde, conforme o design de quem está dentro da dieta.
   return (
     <Container>
-      <Header />
+      <Cabecalho />
+      
+      <CardPorcentagem 
+        titulo="90,86%" 
+        subtitulo="das refeições dentro da dieta"
+        cor="PRIMARIA"
+      />
     </Container>
   );
 }
