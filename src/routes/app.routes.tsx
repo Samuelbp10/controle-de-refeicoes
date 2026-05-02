@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Home } from '../screens/Home';
+import { Estatisticas } from '../screens/Estatisticas';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -12,7 +13,11 @@ export function AppRoutes() {
         name="inicio"
         component={Home}
       />
-      {/* As outras telas serão adicionadas aqui conforme eu for criando */}
+      {/* Registrei a tela de estatísticas aqui para o aplicativo saber que ela existe */}
+      <Screen 
+        name="estatisticas"
+        component={Estatisticas}
+      />
     </Navigator>
   );
 }
