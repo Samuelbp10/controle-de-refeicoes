@@ -10,6 +10,8 @@ import {
 } from './styles';
 
 import { atualizarRefeicao, RefeicaoStorageDTO } from '../../storage/refeicaoStorage';
+// Reutilizo as funções de máscara aqui na tela de edição também para manter o padrão
+import { maskDate, maskTime } from '../../utils/masks';
 
 type RouteParams = {
   refeicao: RefeicaoStorageDTO;
@@ -35,6 +37,7 @@ export function EditarRefeicao() {
 
   async function lidarComAtualizacao() {
     try {
+      // Mantenho a validação para evitar que o usuário apague tudo e tente salvar vazio
       if (!nome.trim() || !descricao.trim() || !data.trim() || !hora.trim()) {
         return Alert.alert('Editar Refeição', 'Por favor, preencha todos os campos.');
       }
@@ -52,7 +55,7 @@ export function EditarRefeicao() {
       // Chamo a função profissional de atualizar no storage
       await atualizarRefeicao(refeicaoEditada);
 
-      // Redireciono para a Home limpa para forçar o recarregamento dos dados
+      // Redireciono para a Home limpa para forçar o recarregamento dos dados atualizados
       navigation.navigate('inicio');
       
     } catch (error) {
@@ -88,15 +91,23 @@ export function EditarRefeicao() {
           <Coluna>
             <Label>Data</Label>
             <InputForm 
+              placeholder="12/08/2022" 
+              keyboardType="numeric"
+              maxLength={10}
               value={data}
-              onChangeText={setData}
+              // Aplico a formatação em tempo real na edição
+              onChangeText={(texto) => setData(maskDate(texto))}
             />
           </Coluna>
           <Coluna>
             <Label>Hora</Label>
             <InputForm 
+              placeholder="20:00" 
+              keyboardType="numeric"
+              maxLength={5}
               value={hora}
-              onChangeText={setHora}
+              // Aplico a formatação de hora
+              onChangeText={(texto) => setHora(maskTime(texto))}
             />
           </Coluna>
         </LinhaDupla>
@@ -123,6 +134,7 @@ export function EditarRefeicao() {
         </LinhaDupla>
 
         <Rodape>
+          {/* Mudei o texto do botão conforme o design */}
           <Button title="Salvar alterações" onPress={lidarComAtualizacao} />
         </Rodape>
       </Conteudo>

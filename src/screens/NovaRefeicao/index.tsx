@@ -11,6 +11,8 @@ import {
 
 // Importo as funções do meu gerenciador de armazenamento e a tipagem
 import { salvarRefeicao, RefeicaoStorageDTO } from '../../storage/refeicaoStorage';
+// Importo as funções de máscara que criei na pasta utils para blindar a entrada de dados do usuário
+import { maskDate, maskTime } from '../../utils/masks';
 
 export function NovaRefeicao() {
   const navigation = useNavigation();
@@ -83,16 +85,22 @@ export function NovaRefeicao() {
             <Label>Data</Label>
             <InputForm 
               placeholder="12/08/2022" 
+              keyboardType="numeric"
+              maxLength={10}
               value={data}
-              onChangeText={setData}
+              // Aplico a máscara de data em tempo real conforme o usuário digita
+              onChangeText={(texto) => setData(maskDate(texto))}
             />
           </Coluna>
           <Coluna>
             <Label>Hora</Label>
             <InputForm 
               placeholder="20:00" 
+              keyboardType="numeric"
+              maxLength={5}
               value={hora}
-              onChangeText={setHora}
+              // Aplico a máscara de hora em tempo real limitando os caracteres
+              onChangeText={(texto) => setHora(maskTime(texto))}
             />
           </Coluna>
         </LinhaDupla>
