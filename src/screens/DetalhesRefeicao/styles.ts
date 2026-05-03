@@ -6,7 +6,6 @@ type PropsStatus = {
   tipo: 'PRIMARIA' | 'SECUNDARIA';
 };
 
-// Reutilizei a lógica de cor de fundo baseada no status da dieta
 export const Container = styled.View<PropsStatus>`
   flex: 1;
   background-color: ${({ theme, tipo }) => 
@@ -27,7 +26,6 @@ export const BotaoVoltar = styled(TouchableOpacity)`
   top: 56px;
 `;
 
-// A cor do ícone também se adapta ao fundo
 export const IconeVoltar = styled(ArrowLeft).attrs<PropsStatus>(({ theme, tipo }) => ({
   size: 24,
   color: tipo === 'PRIMARIA' ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK
@@ -85,7 +83,6 @@ export const DataHora = styled.Text`
   `}
 `;
 
-// Criei essa tag para mostrar o status com uma bolinha colorida
 export const TagStatus = styled.View`
   padding: 8px 16px;
   background-color: ${({ theme }) => theme.COLORS.GRAY_6};
@@ -116,5 +113,46 @@ export const Rodape = styled.View`
   flex: 1;
   justify-content: flex-end;
   padding-bottom: 24px;
-  gap: 8px; /* Espaçamento entre os botões */
+  gap: 8px; 
+`;
+
+// --- COMPONENTES DO MODAL ---
+
+export const Overlay = styled.View`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.25);
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+`;
+
+export const ModalContainer = styled.View`
+  width: 100%;
+  background-color: ${({ theme }) => theme.COLORS.GRAY_7};
+  border-radius: 8px;
+  padding: 40px 24px 24px;
+  align-items: center;
+`;
+
+export const TituloModal = styled.Text`
+  text-align: center;
+  margin-bottom: 32px;
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.LG}px;
+    font-family: ${theme.FONT_FAMILY.BOLD};
+    color: ${theme.COLORS.GRAY_2};
+  `}
+`;
+
+export const LinhaBotoesModal = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+`;
+
+// Como os botões do modal têm um tamanho reduzido (ocupam metade da tela cada), 
+// criei um container para envolver meu botão padrão e ajustar a largura sem quebrar o componente global.
+export const MetadeBotao = styled.View`
+  flex: 1;
 `;

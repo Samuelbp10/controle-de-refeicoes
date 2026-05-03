@@ -1,33 +1,29 @@
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
 import { TouchableOpacity } from 'react-native';
 
-export type StatusRefeicaoProps = 'PRIMARIA' | 'SECUNDARIA';
-
-type Props = {
-  status: StatusRefeicaoProps;
-};
-
-// Uso TouchableOpacity para o usuário poder clicar na refeição e abrir os detalhes
+// Transformei o Container em um TouchableOpacity para que o usuário possa clicar na refeição inteira
 export const Container = styled(TouchableOpacity)`
   width: 100%;
-  height: 49px;
-  border-width: 1px;
-  border-color: ${({ theme }) => theme.COLORS.GRAY_5};
-  border-radius: 6px;
+  height: 80px;
   flex-direction: row;
   align-items: center;
-  padding: 14px 16px;
+  padding: 14px 16px 14px 12px;
+  border-radius: 6px;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.COLORS.GRAY_5};
   margin-bottom: 8px;
 `;
 
 export const Hora = styled.Text`
-  font-size: ${({ theme }) => theme.FONT_SIZE.SM}px;
-  font-family: ${({ theme }) => theme.FONT_FAMILY.BOLD};
-  color: ${({ theme }) => theme.COLORS.GRAY_1};
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.SM}px;
+    font-family: ${theme.FONT_FAMILY.BOLD};
+    color: ${theme.COLORS.GRAY_1};
+  `}
 `;
 
-// Aquela barrinha vertical para separar a hora do nome
-export const Divisor = styled.View`
+// Criei essa divisória vertical de 1px para ficar idêntico ao design do Figma
+export const Divisoria = styled.View`
   width: 1px;
   height: 14px;
   background-color: ${({ theme }) => theme.COLORS.GRAY_4};
@@ -36,16 +32,22 @@ export const Divisor = styled.View`
 
 export const Nome = styled.Text`
   flex: 1;
-  font-size: ${({ theme }) => theme.FONT_SIZE.MD}px;
-  font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
-  color: ${({ theme }) => theme.COLORS.GRAY_2};
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.MD}px;
+    font-family: ${theme.FONT_FAMILY.REGULAR};
+    color: ${theme.COLORS.GRAY_2};
+  `}
 `;
 
-// A bolinha que indica se a refeição está dentro ou fora da dieta
-export const Status = styled.View<Props>`
+type StatusProps = {
+  tipo: 'PRIMARIA' | 'SECUNDARIA';
+};
+
+// A bolinha que indica se a refeição está ou não na dieta
+export const StatusCor = styled.View<StatusProps>`
   width: 14px;
   height: 14px;
   border-radius: 7px;
-  background-color: ${({ theme, status }) => 
-    status === 'PRIMARIA' ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID};
+  background-color: ${({ theme, tipo }) => 
+    tipo === 'PRIMARIA' ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID};
 `;

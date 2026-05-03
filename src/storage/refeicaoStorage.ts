@@ -14,29 +14,33 @@ export type RefeicaoStorageDTO = {
 
 export async function salvarRefeicao(novaRefeicao: RefeicaoStorageDTO) {
   try {
-    // Primeiro, busco todas as refeições que já estão salvas no dispositivo
     const refeicoesSalvas = await buscarRefeicoes();
-
-    // Adiciono a nova refeição na lista, aplicando o conceito de imutabilidade exigido nos requisitos
     const novaLista = [...refeicoesSalvas, novaRefeicao];
-
-    // Converto a lista para string (JSON) e salvo no AsyncStorage
     await AsyncStorage.setItem(CHAVE_STORAGE, JSON.stringify(novaLista));
   } catch (error) {
-    // Repasso o erro para quem chamou a função conseguir tratar
     throw error;
   }
 }
 
 export async function buscarRefeicoes() {
   try {
-    // Busco os dados armazenados pela chave padrão
     const storage = await AsyncStorage.getItem(CHAVE_STORAGE);
-    
-    // Se tiver algo salvo, converto de volta para array. Se não, retorno um array vazio.
     const refeicoes: RefeicaoStorageDTO[] = storage ? JSON.parse(storage) : [];
-    
     return refeicoes;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Função profissional que criei para remover uma refeição específica pelo seu ID
+export async function excluirRefeicao(idRefeicao: string) {
+  try {
+    const refeicoesSalvas = await buscarRefeicoes();
+    
+    // Filtro a lista mantendo apenas as refeições com ID diferente do que quero excluir, garantindo a imutabilidade exigida
+    const refeicoesAtualizadas = refeicoesSalvas.filter(refeicao => refeicao.id !== idRefeicao);
+    
+    await AsyncStorage.setItem(CHAVE_STORAGE, JSON.stringify(refeicoesAtualizadas));
   } catch (error) {
     throw error;
   }

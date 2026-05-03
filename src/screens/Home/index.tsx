@@ -10,7 +10,6 @@ import { CartaoRefeicao } from '../../components/CartaoRefeicao';
 import { Container, MealsTitle, TituloData } from './styles';
 import { buscarRefeicoes, RefeicaoStorageDTO } from '../../storage/refeicaoStorage';
 
-// Criei essa interface para tipar o formato exato que a SectionList exige
 interface DataListProps {
   title: string;
   data: RefeicaoStorageDTO[];
@@ -18,26 +17,30 @@ interface DataListProps {
 
 export function Home() {
   const [refeicoes, setRefeicoes] = useState<DataListProps[]>([]);
+  // Estado para guardar o cálculo real da dieta
+  const [percentual, setPercentual] = useState('0,00');
+  
   const navigation = useNavigation();
 
-  // Função profissional para buscar e agrupar os dados do AsyncStorage
   async function carregarRefeicoes() {
     try {
       const dados = await buscarRefeicoes();
       
-      // Lógica para agrupar as refeições por data, exigência perfeita para a SectionList
-      const refeicoesAgrupadas: DataListProps[] = [];
+      // Matemática profissional da dieta
+      const totalRefeicoes = dados.length;
+      const refeicoesNaDieta = dados.filter(refeicao => refeicao.estaNaDieta).length;
+      const calculo = totalRefeicoes === 0 ? 0 : (refeicoesNaDieta / totalRefeicoes) * 100;
       
+      // Formato para string com duas casas decimais e vírgula
+      setPercentual(calculo.toFixed(2).replace('.', ','));
+      
+      const refeicoesAgrupadas: DataListProps[] = [];
       dados.forEach(refeicao => {
         const dataExiste = refeicoesAgrupadas.find(item => item.title === refeicao.data);
-        
         if (dataExiste) {
           dataExiste.data.push(refeicao);
         } else {
-          refeicoesAgrupadas.push({
-            title: refeicao.data,
-            data: [refeicao]
-          });
+          refeicoesAgrupadas.push({ title: refeicao.data, data: [refeicao] });
         }
       });
 
@@ -47,7 +50,6 @@ export function Home() {
     }
   }
 
-  // O useFocusEffect garante que os dados sejam recarregados sempre que a tela Home ganhar foco
   useFocusEffect(
     useCallback(() => {
       carregarRefeicoes();
@@ -63,28 +65,23 @@ export function Home() {
   }
 
   function lidarComDetalhes(refeicao: RefeicaoStorageDTO) {
-    // Passo o objeto inteiro da refeição para a tela de detalhes exibir as informações corretas
     navigation.navigate('detalhes', { refeicao });
   }
+
+  // Lógica para cor do card: Se o percentual for menor que 50%, fica vermelho.
+  const corDoCard = parseFloat(percentual.replace(',', '.')) >= 50 ? 'PRIMARIA' : 'SECUNDARIA';
 
   return (
     <Container>
       <Cabecalho />
-      
       <CardPorcentagem 
-        titulo="90,86%" // Deixei estático por enquanto, se der tempo fazemos o cálculo dinâmico
+        titulo={`${percentual}%`} 
         subtitulo="das refeições dentro da dieta"
-        cor="PRIMARIA"
+        cor={corDoCard}
         onPress={lidarComEstatisticas}
       />
-
       <MealsTitle>Refeições</MealsTitle>
-      
-      <Button 
-        title="+ Nova refeição" 
-        onPress={lidarComNovaRefeicao} 
-      />
-      
+      <Button title="+ Nova refeição" onPress={lidarComNovaRefeicao} />
       <SectionList 
         sections={refeicoes}
         keyExtractor={(item) => item.id}
@@ -93,7 +90,6 @@ export function Home() {
             hora={item.hora}
             nome={item.nome}
             status={item.estaNaDieta ? 'PRIMARIA' : 'SECUNDARIA'}
-            // Adicionei o onPress para abrir os detalhes da refeição clicada
             onPress={() => lidarComDetalhes(item)}
           />
         )}
@@ -107,11 +103,10 @@ export function Home() {
         ]}
         ListEmptyComponent={() => (
           <MealsTitle style={{ textAlign: 'center', color: '#aaa' }}>
-            Nenhuma refeição cadastrada ainda.
+            Nenhuma refeição cadastrada.
           </MealsTitle>
         )}
       />
-      
     </Container>
   );
 }
