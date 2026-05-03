@@ -1,89 +1,115 @@
-import { useState } from 'react';
-import { SectionList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useCallback } from 'react';
+import { SectionList, Alert } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { Cabecalho } from '../../components/Cabecalho'; 
 import { CardPorcentagem } from '../../components/CardPorcentagem';
-// Mantenho o Button buscando da pasta correta que escolhi (Opção B)
 import { Button } from '../../components/Button'; 
 import { CartaoRefeicao } from '../../components/CartaoRefeicao';
 
-// Mantenho o MealsTitle que escolhi (Opção B)
 import { Container, MealsTitle, TituloData } from './styles';
+import { buscarRefeicoes, RefeicaoStorageDTO } from '../../storage/refeicaoStorage';
+
+// Criei essa interface para tipar o formato exato que a SectionList exige
+interface DataListProps {
+  title: string;
+  data: RefeicaoStorageDTO[];
+}
 
 export function Home() {
-  // Criei um estado (useState) com dados fictícios (mockados) para conseguir visualizar a minha lista na tela.
-  // Note que a SectionList exige que o array tenha um formato específico: um 'title' para o cabeçalho e um 'data' com os itens.
-  const [refeicoes, setRefeicoes] = useState([
-    {
-      title: '12.08.22',
-      data: [
-        { hora: '20:00', nome: 'X-Tudo', status: 'SECUNDARIA' as const },
-        { hora: '16:00', nome: 'Vitamina de banana', status: 'PRIMARIA' as const },
-        { hora: '12:30', nome: 'Salada e frango', status: 'PRIMARIA' as const },
-      ]
-    },
-    {
-      title: '11.08.22',
-      data: [
-        { hora: '20:00', nome: 'Pizza', status: 'SECUNDARIA' as const },
-        { hora: '12:30', nome: 'Strogonoff', status: 'PRIMARIA' as const },
-      ]
-    }
-  ]);
-
-  // Instancio o navigation para poder direcionar o usuário para as outras telas do aplicativo
+  const [refeicoes, setRefeicoes] = useState<DataListProps[]>([]);
   const navigation = useNavigation();
 
+  // Função profissional para buscar e agrupar os dados do AsyncStorage
+  async function carregarRefeicoes() {
+    try {
+      const dados = await buscarRefeicoes();
+      
+      // Lógica para agrupar as refeições por data, exigência perfeita para a SectionList
+      const refeicoesAgrupadas: DataListProps[] = [];
+      
+      dados.forEach(refeicao => {
+        const dataExiste = refeicoesAgrupadas.find(item => item.title === refeicao.data);
+        
+        if (dataExiste) {
+          dataExiste.data.push(refeicao);
+        } else {
+          refeicoesAgrupadas.push({
+            title: refeicao.data,
+            data: [refeicao]
+          });
+        }
+      });
+
+      setRefeicoes(refeicoesAgrupadas);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar as refeições.');
+    }
+  }
+
+  // O useFocusEffect garante que os dados sejam recarregados sempre que a tela Home ganhar foco
+  useFocusEffect(
+    useCallback(() => {
+      carregarRefeicoes();
+    }, [])
+  );
+
   function lidarComNovaRefeicao() {
-    // Criei essa função para abrir a tela de nova refeição
     navigation.navigate('novaRefeicao');
   }
 
   function lidarComEstatisticas() {
-    // Criei essa função para abrir a tela de estatísticas detalhadas
     navigation.navigate('estatisticas');
   }
 
-  // Posicionei o cabeçalho e, logo abaixo, o meu card de porcentagem.
-  // Passei "PRIMARIA" na cor para ele ficar verde, conforme o design de quem está dentro da dieta.
+  function lidarComDetalhes(refeicao: RefeicaoStorageDTO) {
+    // Passo o objeto inteiro da refeição para a tela de detalhes exibir as informações corretas
+    navigation.navigate('detalhes', { refeicao });
+  }
+
   return (
     <Container>
       <Cabecalho />
       
-      {/* O CardPorcentagem aceita o onPress porque no meu arquivo de estilos eu criei ele como um TouchableOpacity */}
       <CardPorcentagem 
-        titulo="90,86%" 
+        titulo="90,86%" // Deixei estático por enquanto, se der tempo fazemos o cálculo dinâmico
         subtitulo="das refeições dentro da dieta"
         cor="PRIMARIA"
         onPress={lidarComEstatisticas}
       />
 
-      {/* Título e botão usando as nomenclaturas em inglês que escolhi */}
       <MealsTitle>Refeições</MealsTitle>
       
-      {/* Aqui chamo o botão. Como o padrão dele já é o fundo escuro (SOLID), eu só preciso passar o título. Adicionei o evento de clique para navegar. */}
       <Button 
         title="+ Nova refeição" 
         onPress={lidarComNovaRefeicao} 
       />
       
-      {/* Configurei a minha SectionList para renderizar os dados que criei ali em cima */}
       <SectionList 
         sections={refeicoes}
-        keyExtractor={(item, index) => item.nome + index}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <CartaoRefeicao 
             hora={item.hora}
             nome={item.nome}
-            status={item.status}
+            status={item.estaNaDieta ? 'PRIMARIA' : 'SECUNDARIA'}
+            // Adicionei o onPress para abrir os detalhes da refeição clicada
+            onPress={() => lidarComDetalhes(item)}
           />
         )}
         renderSectionHeader={({ section: { title } }) => (
           <TituloData>{title}</TituloData>
         )}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }} // Adicionei um espaço no final para não colar no fundo da tela
+        contentContainerStyle={[
+          { paddingBottom: 100 },
+          refeicoes.length === 0 && { flex: 1, justifyContent: 'center' }
+        ]}
+        ListEmptyComponent={() => (
+          <MealsTitle style={{ textAlign: 'center', color: '#aaa' }}>
+            Nenhuma refeição cadastrada ainda.
+          </MealsTitle>
+        )}
       />
       
     </Container>
